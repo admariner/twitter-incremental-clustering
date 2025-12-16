@@ -1,7 +1,12 @@
 import pandas as pd
 import numpy as np
 import csv
+import argparse
 
+parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+parser.add_argument("--format", required=False, choices=["csv", "tsv"], default="tsv")
+
+args = vars(parser.parse_args())
 
 # Load Event2018
 columns = [
@@ -48,14 +53,29 @@ df_np_part2 = np.load(p_part2, allow_pickle=True)
 df_np = np.concatenate((df_np_part1, df_np_part2), axis=0)
 df_2012 = pd.DataFrame(data=df_np, columns=columns)
 
-# Write csv version of Event2018
-df_2018[["tweet_id", "text", "created_at", "event_id"]].rename(
-    columns={"tweet_id": "id", "event_id": "label"}
-).to_csv("event2018.tsv", sep="\t", quoting=csv.QUOTE_ALL, index=False)
 
-# Write csv version of Event2012
-df_2012[["tweet_id", "text", "created_at", "event_id"]].rename(
-    columns={"tweet_id": "id", "event_id": "label"}
-).to_csv("event2012.tsv", sep="\t", quoting=csv.QUOTE_ALL, index=False)
+if args["format"] == "tsv":
+    # Write csv version of Event2018
+    df_2018[["tweet_id", "text", "created_at", "event_id"]].rename(
+        columns={"tweet_id": "id", "event_id": "label"}
+    ).to_csv("event2018.tsv", sep="\t", quoting=csv.QUOTE_ALL, index=False)
 
-print("Save preprocessed files to event2012.tsv and event2018.tsv")
+    # Write csv version of Event2012
+    df_2012[["tweet_id", "text", "created_at", "event_id"]].rename(
+        columns={"tweet_id": "id", "event_id": "label"}
+    ).to_csv("event2012.tsv", sep="\t", quoting=csv.QUOTE_ALL, index=False)
+
+    print("Save preprocessed files to event2012.tsv and event2018.tsv")
+
+elif args["format"] == "csv":
+    # Write csv version of Event2018
+    df_2018[["tweet_id", "text", "created_at", "event_id"]].rename(
+        columns={"tweet_id": "id", "event_id": "label"}
+    ).to_csv("event2018.csv", index=False)
+
+    # Write csv version of Event2012
+    df_2012[["tweet_id", "text", "created_at", "event_id"]].rename(
+        columns={"tweet_id": "id", "event_id": "label"}
+    ).to_csv("event2012.csv", index=False)
+
+    print("Save preprocessed files to event2012.csv and event2018.csv")
